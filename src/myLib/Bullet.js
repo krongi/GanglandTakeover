@@ -1,0 +1,55 @@
+import Phaser from "../lib/phaser.js";
+import Game from "../scenes/Game.js"
+
+export default class Bullet extends Phaser.Physics.Arcade.Image {
+    
+    constructor(scene, x, y) {
+        super(scene, x, y, 'laser1')
+        var lastFired = 0
+        var isDown = false
+        var mouseX = 0
+        var mouseY = 0
+        this.incX = 0
+        this.incY = 0
+        this.lifeSpan = 0
+        this.speed = Phaser.Math.GetSpeed(600, 1)
+       
+
+    }
+    
+
+    fire(playerPosition, pointerPosition) {
+        this.setActive(true)
+        this.setVisible(true)      
+        this.enableBody(true, playerPosition.x, playerPosition.y)
+        this.setPosition(playerPosition.x, playerPosition.y)
+        let angle = Phaser.Math.Angle.Between(pointerPosition.x, pointerPosition.y, 600, 400)
+        this.setRotation(angle)
+        this.body.isCircle = true
+        this.body.radius = 10
+        
+
+        this.flipX = true
+        this.incX = Math.cos(angle)
+        this.incY = Math.sin(angle)
+        this.lifeSpan = 1000
+        console.log(playerPosition)
+        
+    }
+
+    update(time, delta) {
+        this.body.radius = 10
+        this.lifeSpan -= delta
+        this.x -= this.incX * (this.speed * delta)
+        this.body.x -= this.incX * (this.speed * delta)
+        this.y -= this.incY * (this.speed * delta)
+        this.body.y -= this.incY * (this.speed * delta)
+        if (this.lifeSpan <= 0) {
+            this.setActive(false)
+            this.setVisible(false)
+            this.destroy()
+            
+        }
+            
+    }
+}

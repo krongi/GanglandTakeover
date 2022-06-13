@@ -1,0 +1,44 @@
+{"frames": {
+
+"soldier_blue_01_64.png":
+{
+	"frame": {"x":0,"y":0,"w":64,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
+	"sourceSize": {"w":64,"h":64}
+},
+"soldier_blue_02_64.png":
+{
+	"frame": {"x":64,"y":0,"w":64,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
+	"sourceSize": {"w":64,"h":64}
+},
+"soldier_blue_03_64.png":
+{
+	"frame": {"x":128,"y":0,"w":64,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
+	"sourceSize": {"w":64,"h":64}
+},
+"soldier_blue_04_64.png":
+{
+	"frame": {"x":192,"y":0,"w":64,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":64,"h":64},
+	"sourceSize": {"w":64,"h":64}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "blueSoldiers.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":64},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e4ab09c1903edab84ba6beff4d3f0f65:44db1372cb2a6b1eb6fc421fa068674a:ce941f51fa2f1b14ba354221dbf7ec24$"
+}
+}
