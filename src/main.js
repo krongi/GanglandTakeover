@@ -24,6 +24,8 @@ const gameConfig = ({
         }
         
     }})
+const STATE_DEAD = 1
+const STATE_ALIVE =0
 
 const NORTH_FACE = Phaser.Math.Between(-135, -46)
 const EAST_FACE = Phaser.Math.Between(-45, 44)

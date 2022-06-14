@@ -26,15 +26,12 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
         let angle = Phaser.Math.Angle.Between(pointerPosition.x, pointerPosition.y, 600, 400)
         this.setRotation(angle)
         this.body.isCircle = true
-        this.body.radius = 10
-        
-
+        this.body.setSize(this.width * 0.25, this.height * 0.25)
         this.flipX = true
         this.incX = Math.cos(angle)
         this.incY = Math.sin(angle)
         this.lifeSpan = 1000
-        console.log(playerPosition)
-        
+
     }
 
     update(time, delta) {

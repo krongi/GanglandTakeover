@@ -1,0 +1,20 @@
+{"frames": {
+
+"spritesheetCustom.png":
+{
+	"frame": {"x":0,"y":0,"w":320,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":320,"h":32},
+	"sourceSize": {"w":320,"h":32}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "blueRocketGuy.png",
+	"format": "RGBA8888",
+	"size": {"w":320,"h":32},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b8c9f98b73fc4171cca2ffbfc4cd0a62:63a51d54c44305cc79e9cea0b695fc86:2bd1ac9a07ac3d02ce083286ccadf741$"
+}
+}
