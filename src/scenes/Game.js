@@ -2,6 +2,7 @@
 import Phaser from "../lib/phaser.js";
 import Bullet from "../myLib/Bullet.js";
 import Tree from "../myLib/Tree.js";
+import Resource from "../myLib/Resource.js";
 import { GanglandTakeover } from "../main.js";
 
 var bullet;
@@ -26,6 +27,7 @@ var count = 0
 var gayst;
 var mountains;
 var mountain;
+var resources;
 
 export default class Game extends Phaser.Scene {
     
@@ -44,9 +46,11 @@ export default class Game extends Phaser.Scene {
         this.load.atlas('laser', '../assets/lasers.png', '../assets/lasers.json');
         this.load.atlas('worldTilesAtlas', '../assets/worldTiles.png', '../assets/worldTiles.json');
         this.load.atlas('bullets', '../assets/lasers.png', '../assets/lasers.json');
-        this.load.spritesheet('worldTiles', '../assets/worldTiles.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('worldTiles', '../assets/worldTiles.png', {frameWidth: 64, frameHeight: 64})
         this.load.image('laser1','../assets/laser1.png');
-        // this.load.image('tree', 'object_tree_64.png')
+        this.load.image('tree', '../assets/tree.png');
+        this.load.image('mountain', '../assets/mountain.png');
+
 
     }
         
@@ -135,22 +139,6 @@ export default class Game extends Phaser.Scene {
         player.body.setSize(player.body.width * 0.5, player.body.height * 0.5, true)
         player.body.setCircle(player.body.width * 0.5,)
 
-        mountains = this.physics.add.staticGroup({
-            active: true,
-
-        })
-
-        for (let x = 0; x < 100; x++) {
-            mountain = this.physics.add.staticImage(Phaser.Math.Between(40, 1400), Phaser.Math.Between(40, 1400), 'worldTilesAtlas', 'object_mountain_64.png')
-            mountain.body.setMass(200)
-            mountain.body.setSize(mountain.body.width * 0.5, mountain.body.height * 0.5)
-            mountain.body.setCircle(mountain.body.width * 0.6)
-            mountain.setPushable(false)
-            mountain.name = 'mountain' + x.toString()
-            mountain.setData({stone: 100})
-            mountains.add(mountain)
-        }
-        
         bullets = this.physics.add.group({
             defaultFrame: 'laser1',
             active: true,
@@ -158,23 +146,39 @@ export default class Game extends Phaser.Scene {
             runChildUpdate: true,
         
         })
-        trees = this.physics.add.staticGroup({
-            classType: Tree,
-        
+
+        resources = this.physics.add.staticGroup({
+                active: true,
+                classType: Resource,
+                visible: true,
+                setScale: [0.5, 0.5],
+                defaultFrame: ['mountain', 'tree'],
+                randomKey: true,
+                
         })
+        
 
         for (let x = 0; x < 100; x++) {
-            tree = this.physics.add.staticImage(Phaser.Math.Between(40, 1400), Phaser.Math.Between(40, 1400),'worldTilesAtlas', 'object_tree_64.png');
-            tree.body.setMass(200);
-            tree.body.setSize(tree.body.width * 0.5, tree.body.height * 0.5)
-            tree.body.setCircle(tree.body.width * 0.6)
-            tree.setPushable(false);
-            tree.name = `tree`+ x.toString();
-            tree.setData({wood: 100})
-            trees.add(tree);
-        }
-        
-        treeMembers = trees.getChildren();       
+            mountain = this.physics.add.staticImage(Phaser.Math.Between(40, 1400), Phaser.Math.Between(40, 1400), resources.defaultFrame[0])
+            mountain.setData({stone: 25})
+            // mountain.body.setEnable(true)
+            mountain.body.setMass(200)
+            mountain.setBodySize(mountain.width * 0.5, mountain.height * 0.5)
+            mountain.body.setCircle(mountain.body.width * 0.5, mountain.body.height * 0.5)
+            mountain.setPushable(false)
+            mountain.name = 'mountain' + x.toString()
+            resources.add(mountain)
+
+            tree = this.physics.add.staticImage(Phaser.Math.Between(40, 1400), Phaser.Math.Between(40, 1400), resources.defaultFrame[1])
+            tree.setData({wood: 25})
+            // tree.body.setEnable(true)
+            tree.setMass(200)
+            tree.setBodySize(tree.width * 0.5, tree.height * 0.5)
+            tree.body.setCircle(tree.body.width * 0.5, tree.body.height * 0.5)
+            tree.setPushable(false)
+            tree.name = 'tree' + x.toString()
+            resources.add(tree)
+        }     
            
         gayst = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
         .setVisible(true)
@@ -185,41 +189,30 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.centerOn(player.x, player.y);
         this.cameras.main.startFollow(player);
 
-        this.physics.add.collider(player, trees, function dicked(player, tree) {
-            console.log("player dicked by " + tree.name);
+        this.physics.add.collider(player, resources, function dicked(player, resource) {
+            console.log("player dicked by " + resource.name);
 
-        });
-
-        this.physics.world.addCollider(bullets, trees, function (bullet, tree) {
+        });        
+        
+        
+        this.physics.world.addCollider(bullets, resources, function (bullet, resource) {
                 
-            let name = tree.name
-            let data = tree.getData('wood')
-            player.incData('wood', data)
-            tree.destroy();
+            let resourceData = resource.data
+            let name = resource.name
+            resource.destroy()           
             bullet.destroy();
             console.log(name +' has been destroyed \n');
                 
         }); 
-
-        this.physics.world.addCollider(bullets, mountains, function (bullet, mountain) {
-                
-            let name = mountain.name
-            let data = mountain.getData('stone')
-            player.incData('stone', data)
-            mountain.destroy();
-            bullet.destroy();
-            console.log(name +' has been destroyed \n');
-                
-        });
-
-        console.log(trees.getChildren())
         
-        this.physics.world.addCollider(gayst, trees)
-        this.physics.world.addCollider(gayst, mountains)
-        this.physics.world.addCollider(player, mountains)
+        this.physics.world.addCollider(player, resources, function playerResourceCollision(player, resource) {
+            console.log("dicked by " + resource)
+        })
         
         this.anims.play('blueRocketAnimationStill', gayst)
-        placeText = this.add.text(0, 0, 'total trees ' + trees.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
+        placeText = this.add.text(0, 0, ' ' + resources.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
+
+        this.physics.world.addCollider(gayst, resources)
         
     }
 
@@ -234,20 +227,7 @@ export default class Game extends Phaser.Scene {
             this.physics.moveTo(gayst, player.x - 30, player.y - 30, 180)
         }
         
-        
-        if (checkTime < 5000) {
-
-            checkTime += delta;
-            
-        }
-        else {
-
-            console.log(player.data.list);
-            checkTime = 0;
-
-        }
-        
-        if (count != trees.getLength()) {
+        if (resources) {
 
             placeText.destroy()
             placeText = this.add.text(0, 0, 'Health ' + player.getData('health') + ' Gold ' + player.getData('gold') + '\n' + 'Wood ' + player.getData('wood') + '   ' + 'Stone ' + player.getData('stone'))
@@ -255,7 +235,7 @@ export default class Game extends Phaser.Scene {
             .setBackgroundColor('black')
             .setColor('blue')
             .setScale(1.5, 1.5)
-            count = trees.length
+            count = resources.length
 
         }
 
