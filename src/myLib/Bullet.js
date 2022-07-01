@@ -3,8 +3,8 @@ import Game from "../scenes/Game.js"
 
 export default class Bullet extends Phaser.Physics.Arcade.Image {
     
-    constructor(scene, x, y) {
-        super(scene, x, y, 'laser1')
+    constructor(scene, x, y, imageKey) {
+        super(scene, x, y, imageKey = 'laser1')
         var lastFired = 0
         var isDown = false
         var mouseX = 0
@@ -13,8 +13,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
         this.incY = 0
         this.lifeSpan = 0
         this.speed = Phaser.Math.GetSpeed(600, 1)
-       
-
+    
     }
     
 
