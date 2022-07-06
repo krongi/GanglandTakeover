@@ -178,14 +178,13 @@ export default class Game extends Phaser.Scene {
             
                
             var dope = this.physics.add.staticImage(mountain.x, mountain.y, 'cokeBlock')
-            // dope.setData({quantity: 1, drug: 'cocaine'})
             dope.body.setMass(1)
             dope.setBodySize(dope.width * 0.5, dope.height * 0.5)
             dope.body.setCircle(dope.body.width * 0.5, dope.body.height * 0.5)
             dope.setPushable(false)
             dope.key = 'dope'
             dope.setName("blow" + drugCounter.toString())
-            dope.setSize(dope.width * 0.5, dope.height * 0.5)
+            dope.setDisplaySize(dope.width * 0.5, dope.height * 0.5)
             drugCounter ++
             dope.setActive(false)
             dope.setVisible(false)
@@ -205,15 +204,13 @@ export default class Game extends Phaser.Scene {
             
             
             dope = this.physics.add.staticImage(tree.x, tree.y, 'cokeBlock')
-            // let dope = new Phaser.Physics.Arcade.Image('game', tree.x, tree.y, 'cokeBlock')
-            // dope.setData({quantity: 1, drug: 'cocaine'})
             dope.body.setMass(1)
             dope.setBodySize(dope.width * 0.5, dope.height * 0.5)
             dope.body.setCircle(dope.body.width * 0.5, dope.body.height * 0.5)
             dope.setPushable(false)
             dope.key = 'dope'
             dope.setName("blow" + drugCounter.toString())
-            dope.setSize(dope.width * 0.5, dope.height * 0.5)
+            dope.setDisplaySize(dope.width * 0.5, dope.height * 0.5)
             drugCounter ++
             dope.setActive(false)
             dope.setVisible(false)
@@ -238,75 +235,14 @@ export default class Game extends Phaser.Scene {
             player.incData ('health', -1)
             console.log("player dicked by " + resource.name);
 
-        });        
-        
-
-        // function addDrug(resource, drugs) {
-            
-
-        //     let dope = abstract.physics.add.staticImage(resource.x, resource.y, 'cokeBlock')
-        //             // let dope = new Phaser.Physics.Arcade.Image('game', resource.x, resource.y, 'cokeBlock')
-        //             // dope.setData({quantity: 1, drug: 'cocaine'})
-        //             // dope.body.setMass(1)
-        //             dope.setDisplaySize(dope.width * 0.25, dope.height * 0.25)
-        //             // dope.setDisplayOrigin(dope.x + dope.getCenter().x, dope.y + dope.getCenter().y)
-                    
-        //             // dope.setPushable(false)
-        //             dope.getCenter()
-        //             dope.body.setCircle(dope.displayWidth * 0.5, dope.x + dope.body.radius, dope.y + dope.body.radius)
-        //             dope.body.setOffset(dope.x + dope.body.x, dope.y + dope.body.y)
-        //             console.log('dope X position = ' + dope.x.toString() + '\n' + 'dope body x position = ' + dope.body.x.toString() + '\n' + 'dope displayOriginX = ' + dope.displayOriginX.toString() + '\n' + dope.body.center.x.toString)
-        //             console.log('dope y position = ' + dope.y.toString() + '\n' + 'dope body y position = ' + dope.body.y.toString() + '\n' + 'dope displayOriginY = ' + dope.displayOriginY.toString())
-                    
-        //             dope.body.position.x = dope.getCenter().x - dope.body.radius
-        //             dope.body.position.y = dope.getCenter().y - dope.body.radius
-
-                    
-        //             dope.display
-        //             dope.displayHeight
-        //             dope.key = 'dope'
-        //             dope.setName("blow" + drugCounter.toString())
-        //             dope.setActive()
-        //             drugCounter ++
-        //             drugs.add(dope)
-        //             console.log(dope)
-        // }   
-            
+        });             
         
         this.physics.world.addCollider(bullets, resources, function (bullet, resource, drug) {
             
-            let name = resource.name
+            let resourceName = resource.name
             console.log(abstract)
-            // let posX = resource.x
-            // let posY = resource.y
-            // drug = drugs.getMatching([posX, posY])
-            // drug.setActive(true)
-            // drug.setVisible(true)    
-            // for (let x = 0; x < 4; x++) {
-                    // addDrug(resource, drugs)
-                    // let dope = this.Game.physics.add.staticImage(resource.x, resource.y, 'cokeBlock')
-                    // // let dope = new Phaser.Physics.Arcade.Image('game', resource.x, resource.y, 'cokeBlock')
-                    // dope.setData({quantity: 1, drug: 'cocaine'})
-                    // dope.body.setMass(1)
-                    // dope.setBodySize(dope.width * 0.5, dope.height * 0.5)
-                    // dope.body.setCircle(dope.body.width * 0.5, dope.body.height * 0.5)
-                    // dope.setPushable(false)
-                    // dope.setSize(dope.width * 0.5, dope.height * 0.5)
-                    // dope.key = 'dope'
-                    // dope.setName("blow" + drugCounter.toString())
-                    // drugCounter ++
-                    // drugs.add(dope)
-                // }
-
-            // dope = abstract.physics.add.staticImage(resource.x, resource.y, 'cokeBlock')
-                // let dope = new Phaser.Physics.Arcade.Image('game', resource.x, resource.y, 'cokeBlock')
-                // dope.setData({quantity: 1, drug: 'cocaine'})
-                    // dope.body.setMass(1)
-            // dope.setDisplaySize(dope.width * 0.25, dope.height * 0.25)
-                    // dope.setDisplayOrigin(dope.x + dope.getCenter().x, dope.y + dope.getCenter().y)
-                    
-                    // dope.setPushable(false)
             dope.getCenter()
+            dope.setVisible(true)
             dope.body.setCircle(dope.displayWidth * 0.5, dope.x + dope.body.radius, dope.y + dope.body.radius)
             dope.body.setOffset(dope.x + dope.body.x, dope.y + dope.body.y)
             console.log('dope X position = ' + dope.x.toString() + '\n' + 'dope body x position = ' + dope.body.x.toString() + '\n' + 'dope displayOriginX = ' + dope.displayOriginX.toString() + '\n' + dope.body.center.x.toString)
@@ -319,13 +255,11 @@ export default class Game extends Phaser.Scene {
             dope.display
             dope.displayHeight
             dope.key = 'dope'
-            dope.setName("blow" + drugCounter.toString())
             dope.setActive()
-            drugCounter ++
-            drugs.add(dope)
+            dope.setVisible()
             console.log(dope)
 
-            console.log(name +' has been destroyed \n');
+            console.log(resourceName +' has been destroyed \n');
                 
             resource.destroy()
             bullet.destroy()
