@@ -12,20 +12,20 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.setActive(true)
         scene.add.existing(this)
         scene.physics.add.existing(this)
-        this.setName('Super Karate Monkey Death Car')
         this.setMass(2);
         this.setImmovable(false);
-        
+        this.body.setCircle(this.width * 0.5)
         this.setInteractive();
         this.setVisible(true)
         this.setCollideWorldBounds(true)
-        this.wood = 0
-        this.stone = 0
         
     }
 
-    grabWood(amount) {
-        this.wood += amount        
+    grabResource(resource, amount) {
+        this.resource = this.data.get(resource)
+        this.resource += amount
+        this.data.set(resource, this.resource)
+        console.log(this.data.get(resource))        
     }
     grabStone(amount) {
         this.stone += amount        

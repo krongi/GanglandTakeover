@@ -6,9 +6,14 @@ import { GanglandTakeover } from "../main.js";
 import Drug from "../myLib/Drug.js";
 import Mountain from "../myLib/Mountain.js"
 import Player from "../myLib/Player.js";
+import Enemy from "../myLib/Enemy.js";
 
 var bullet;
 var bullets;
+var myBullets;
+var enemyBullets;
+var enemies;
+var enemy;
 var mousePointer;
 var checkTime = 0
 var mountains
@@ -142,6 +147,28 @@ export default class Game extends Phaser.Scene {
             runChildUpdate: true,
         })
 
+        myBullets = this.physics.add.staticGroup({
+            defaultFrame: 'laser1',
+            active: true,
+            classType: Bullet,
+            runChildUpdate: true,
+        })
+
+        enemyBullets = this.physics.add.staticGroup({
+            defaultFrame: 'laser1',
+            active: true,
+            classType: Bullet,
+            runChildUpdate: true,
+        })
+
+        enemies = this.physics.add.staticGroup({
+            active: true,
+            setActive: true,
+            runChildUpdate: true,
+            classType: Enemy
+        })
+
+
         resources = this.physics.add.staticGroup({
                 active: true,
                 classType: Resource,
@@ -153,8 +180,8 @@ export default class Game extends Phaser.Scene {
         })  
 
         trees = this.physics.add.staticGroup({
-        classType: Tree,
-        active: true,
+            classType: Tree,
+            active: true,
         })
         
         drugs = this.physics.add.staticGroup({
@@ -179,7 +206,14 @@ export default class Game extends Phaser.Scene {
             resources.add(tree)           
             
         }    
-        
+        for (let x = 0; x < 10; x++) {
+            enemy = enemies.get(Phaser.Math.Between(100, 100), Phaser.Math.Between(100, 100),'blueSoldier')
+            enemy.aquireTarget(player)
+            // enemy.setMass(200)
+            // enemy.setBodySize(enemy.width * 0.5, enemy.height * 0.5)
+            // enemy.body.setCircle(enemy.body.width * 0.5, enemy.body.height * 0.5)
+        }
+
         /* Create the gayst object. He just follows player around*/
         gayst = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
         .setVisible(true)
@@ -195,7 +229,7 @@ export default class Game extends Phaser.Scene {
         /* Add colliders for game objects*/
         this.physics.add.collider(player, resources, function dicked(player, resource) {
             player.incData ('health', -1)
-            console.log("player dicked by " + resource.name);
+            console.log("player health dropping, " + player.data.get('health').toString() + " left...");
 
         });        
 
@@ -203,6 +237,7 @@ export default class Game extends Phaser.Scene {
                             
             mountain.destroy()
             bullet.destroy()
+            player.grabResource('stone', 25)
 
         })
         
@@ -210,6 +245,7 @@ export default class Game extends Phaser.Scene {
                  
             tree.destroy()
             bullet.destroy()
+            player.grabResource('wood', 25)
 
         })
        
@@ -224,11 +260,20 @@ export default class Game extends Phaser.Scene {
     update(time, delta) {
         
         let gaystArea = new Phaser.Geom.Rectangle(player.x - 60, player.y - 60, 40, 40)
+        // let enemyTarget = new Phaser.Geom.Rectangle(player.x - 60, player.y - 60, 40, 40)
+        // for (let i = 0; i<enemies.count; i++) {
+        //     enemies[i].target(enemyTarget)
+        // }
+        
+        // if (!enemyTarget.contains(enemies.getChildren().x) && !enemyTarget.contains(enemies.getChildren().y)) {
+        //     this.physics.moveTo(enemies.getChildren(), player.x, player.y)
+        // }
         
         if (player.data.get('health') <= 0) {
             console.log("you've been dicked")
             this.scene.pause()
         }
+        
 
         if (gaystArea.contains(gayst.x, gayst.y)) {
             gayst.setVelocity(0,0)
