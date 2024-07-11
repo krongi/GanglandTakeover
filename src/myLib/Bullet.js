@@ -19,7 +19,7 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
 
     fire(playerPosition, pointerPosition) {
         this.setActive(true)
-        this.setVisible(true)      
+        this.setVisible(false)      
         this.enableBody(true, playerPosition.x, playerPosition.y)
         this.setPosition(playerPosition.x, playerPosition.y)
         let angle = Phaser.Math.Angle.Between(pointerPosition.x, pointerPosition.y, 600, 400)

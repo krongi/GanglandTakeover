@@ -1,16 +1,16 @@
 import Phaser from "../lib/phaser.js"
 import Game from "../scenes/Game.js"
 
-export default class Tree extends Phaser.Physics.Arcade.Image {
+export default class Mountain extends Phaser.Physics.Arcade.Image {
 
     constructor(scene, x, y, imageKey) {
-        super(scene, x, y, imageKey = 'tree')
+        super(scene, x, y, imageKey = 'mountain')
         this.setPosition(x, y)
-        this.setData({wood: 25})
+        this.setData({stone: 25})
         this.setDisplaySize(this.width * 0.5, this.height * 0.5)
         this.setActive(true)
-        this.key = 'tree'
-        this.name = 'tree' + x.toString()
+        this.key = 'mountain'
+        this.name = 'mountain' + x.toString()
 
     }
     
