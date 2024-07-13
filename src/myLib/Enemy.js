@@ -27,37 +27,52 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.lifeSpan = 0
         this.resources
         this.speed = Phaser.Math.GetSpeed(50, 1);
-        this.stopped       
+        this.stopped
+        this.xDiff
+        this.yDiff
+        // this.addListener('inRange', function() {this.stopAdvance()})       
+        
     }
 
     augmentResource(resource, amount) {
         this.data.inc(resource, amount)
     }
 
-    checkShootingDistance(target) {
-        if (target.x - this.x  < Math.abs(50) && target.y - this.y < Math.abs(50)) {
-            this.stopAdvance()
-            this.stopped = true
-        }
-        else{
-            this.advance(target)
-            this.stopped = false
-        }
-        return this.stopped
-    }
+    // checkShootingDistance(target) {
+    //     if (target.x - this.x  < Math.abs(50) && target.y - this.y < Math.abs(50)) {
+    //         this.stopAdvance()
+    //         this.stopped = true
+    //     }
+    //     else{
+    //         this.advance(target)
+    //         this.stopped = false
+    //     }
+    //     return this.stopped
+    // }
 
     advance(target) {
-        this.scene.physics.moveToObject(this, target, 100)
+        xDiff = Math.abs(this.x) - Math.abs(target.x)
+        yDiff = Math.abs(this.y) - Math.abs(target.y)
+        this.xDiff = xDiff
+        this.yDiff = yDiff
+        if (Math.abs(xDiff) < 300 && Math.abs(yDiff) < 300) {
+            this.setVelocity(0,0)
+            this.emit('stopped', this.name, this.x, this.y)
+        }
+        else {
+            this.scene.physics.moveToObject(this, target, 100)
+            this.emit('start')
+        }        
     }
 
     stopAdvance() {
         this.setVelocity(0, 0)
     }
 
-    // kill() {
-    //     this.data.
-    // }
-    
+    grabResource(resourceGrabbed, amount) {
+        this.incData(resourceGrabbed, amount)  
+    }
+
     update(time, delta) {
         
         // this.advance(target)

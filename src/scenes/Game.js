@@ -2,7 +2,6 @@ import Phaser from "../lib/phaser.js";
 import Bullet from "../myLib/Bullet.js";
 import Tree from "../myLib/Tree.js";
 import Resource from "../myLib/Resource.js";
-import Drug from "../myLib/Drug.js";
 import Mountain from "../myLib/Mountain.js"
 import Player from "../myLib/Player.js";
 import Enemy from "../myLib/Enemy.js";
@@ -25,14 +24,13 @@ var enemies;
 var mountains
 var resources;
 var trees
-var drugs;
+
 
 //sprites and images
 var tree;
 var player;
 var companion;
 var mountain;
-var drug;
 var enemy;
 
 // MISC
@@ -62,10 +60,10 @@ export default class Game extends Phaser.Scene {
         this.load.image('laser1','../assets/laser1.png');
         this.load.image('tree', '../assets/tree.png');
         this.load.image('mountain', '../assets/mountain.png');
-        this.load.image('cokeBlock', '../assets/cokeBlock.png')
-        this.load.image('weedBag', '../assets/weedBag.png')
-        this.load.image('acidSheet', '../assets/acidSheet.png')
-        this.load.image('xtcPill', '../assets/xtcPill.png')
+        // this.load.image('cokeBlock', '../assets/cokeBlock.png')
+        // this.load.image('weedBag', '../assets/weedBag.png')
+        // this.load.image('acidSheet', '../assets/acidSheet.png')
+        // this.load.image('xtcPill', '../assets/xtcPill.png')
 
 
     }
@@ -242,9 +240,9 @@ export default class Game extends Phaser.Scene {
             bullet.destroy()
         })
 
-        this.physics.add.collider(enemies, drugs, function(enemy, drug){
+        this.physics.add.collider(enemies, resources, function(enemy, resource){
             // enemy.destroy()
-            // drug.destroy()
+            
         })
 
         this.physics.add.collider(bullets, mountains, function (bullet, mountain) {
@@ -264,6 +262,8 @@ export default class Game extends Phaser.Scene {
         })
         
         this.physics.add.collider(companion, resources)
+
+        this.physics.add.collider(player.rect, enemies)
         
         this.physics.add.collider(enemies, shootingDistance, function(enemy) {
             enemy.stopAdvance()
@@ -272,7 +272,12 @@ export default class Game extends Phaser.Scene {
         /* Create animations and text objects for game*/
         this.anims.play('blueRocketAnimationStill', companion)
         placeText = this.add.text(0, 0, ' ' + resources.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
-        
+        this.events.addListener('stopped', function() {
+            return enemy.name, enemy.x, enemy.y
+        })
+        this.events.addListener('start', function() {
+            console.log('on the move again')
+        })
     }
     
     update(time, delta) {
@@ -288,11 +293,12 @@ export default class Game extends Phaser.Scene {
 
         this.physics.world.collide(player, enemies)
 
+
         if (player.data.get('health') <= 0) {
             console.log("You're Dead!")
             this.scene.pause()
         }
-
+        
         if (companionArea.contains(companion.x, companion.y)) {
             companion.setVelocity(0,0)
         }
@@ -301,6 +307,9 @@ export default class Game extends Phaser.Scene {
             this.physics.moveTo(companion, player.x - 30, player.y - 30, 180)
         }
         
+        this.physics.collide(player.rect, enemies, function (enemy) {
+            
+        })
         if (resources) {
             placeText.destroy()
             placeText = this.add.text(0, 0, 'Health ' + player.getData('health') + "\n" + 'Magic ' + player.getData('magic')  + ' Gold ' + player.getData('gold') + '\n' + 'Wood ' + player.getData('wood') + '   ' + 'Stone ' + player.getData('stone'))
@@ -314,6 +323,7 @@ export default class Game extends Phaser.Scene {
         enemies.children.each(function(enemy, target) {            
             enemy.advance(player)
             return enemy.stopped
+            enemy.checkShootingDistance(target)
         })
         
         if (this.w.isDown) {
@@ -335,7 +345,7 @@ export default class Game extends Phaser.Scene {
         else {
             player.setVelocity(0, 0);
         }
-
+        
         if (mousePointer.isDown) {
             
             if (checkTime < 500) {
@@ -354,7 +364,25 @@ export default class Game extends Phaser.Scene {
             checkTime = 0;
             }
         }
-        // this.shootingDistance.destroy()
+        
+        if (enemy) {
+            
+            if (checkTime < 500) {
+                checkTime += delta;
+            }
+            else {
+            bullet = bullets.get()
+            if (bullet) {
+                bullet.mouseX = mousePointer.x;
+                bullet.mouseY = mousePointer.y;
+                bullet.body.setMass(100);
+                bullet.fire(player.getCenter(), mousePointer.position);  
+                }
+            
+            
+            checkTime = 0;
+            }
+        }
         
     }
 

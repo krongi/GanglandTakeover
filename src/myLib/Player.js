@@ -19,7 +19,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.setInteractive();
         this.setVisible(true)
         this.setCollideWorldBounds(true)
-        this.circle = this.scene.add.circle(this.x, this.y, this.width*1.5, 200, 140).setActive(true).setVisible(true)
+        this.rect = this.scene.add.rectangle(this.x, this.y, this.width * 3, this.height * 3, 150, 100)
+        this.scene.physics.add.existing(this.rect)
+        
+        this.circle = this.scene.add.circle(this.x, this.y, this.width*1.5, 200, 140).setActive(true).setVisible(true)        
+        
+        // this.rect.addListener('inRange', function (this) {
+
         
         }
 
@@ -28,7 +34,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     update() {
-        this.circle.setPosition(this.x, this.y, )
+        this.circle.setPosition(this.x, this.y)
+        this.scene.physics.collide(this.rect, this.scene.enemies)
+        this.rect.setPosition(this.x, this.y)
         
         
     }
