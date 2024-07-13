@@ -1,6 +1,7 @@
 import Phaser from "../lib/phaser.js";
 import Game from "../scenes/Game.js"
 
+
 export default class Bullet extends Phaser.Physics.Arcade.Image {
     
     constructor(scene, x, y, imageKey) {
@@ -9,17 +10,19 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
         var isDown = false
         var mouseX = 0
         var mouseY = 0
+        this.imageKey = imageKey
         this.incX = 0
         this.incY = 0
         this.lifeSpan = 0
         this.speed = Phaser.Math.GetSpeed(600, 1)
-    
+        
+
     }
     
 
     fire(playerPosition, pointerPosition) {
         this.setActive(true)
-        this.setVisible(false)      
+        this.setVisible(true)      
         this.enableBody(true, playerPosition.x, playerPosition.y)
         this.setPosition(playerPosition.x, playerPosition.y)
         let angle = Phaser.Math.Angle.Between(pointerPosition.x, pointerPosition.y, 600, 400)

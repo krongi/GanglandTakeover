@@ -2,32 +2,44 @@ import Phaser from "../lib/phaser.js";
 import Bullet from "../myLib/Bullet.js";
 import Tree from "../myLib/Tree.js";
 import Resource from "../myLib/Resource.js";
-import { GanglandTakeover } from "../main.js";
 import Drug from "../myLib/Drug.js";
 import Mountain from "../myLib/Mountain.js"
 import Player from "../myLib/Player.js";
 import Enemy from "../myLib/Enemy.js";
+import phaser from "../lib/phaser.js";
 
+
+
+
+// hardware
+var mousePointer;
+
+// projectiles
 var bullet;
+
+// gropus
 var bullets;
 var myBullets;
 var enemyBullets;
 var enemies;
-var enemy;
-var mousePointer;
-var checkTime = 0
 var mountains
-var trees
-var tree;
-var player;
-var placeText;
-var gayst;
-var mountain;
 var resources;
-var drug;
+var trees
 var drugs;
 
-var drugCounter = 0
+//sprites and images
+var tree;
+var player;
+var companion;
+var mountain;
+var drug;
+var enemy;
+
+// MISC
+var checkTime = 0
+var placeText;
+var shootingDistance;
+var companionArea;
 
 export default class Game extends Phaser.Scene {
     
@@ -60,9 +72,7 @@ export default class Game extends Phaser.Scene {
         
     create() {
 
-        
-        let abstract = this
-        
+        // Create animations for sprites etc
         this.anims.create({
             delay: 0,
             frameRate: 6,
@@ -136,22 +146,19 @@ export default class Game extends Phaser.Scene {
         this.add.tileSprite(800, 800, 2400, 2400, 'worldTiles', 15).setOrigin(0.5, 0.5);
         this.add.tileSprite(800, 800, 1600, 1600, 'worldTiles', 6).setOrigin(0.5, 0.5);
         
-        /* Create the main player object and set some properties*/
-        player = new Player(this, 200, 50, 'redSoldier');
-        
         /* Create groups for certain game objects*/
         bullets = this.physics.add.staticGroup({
-            defaultFrame: 'laser1',
-            active: true,
             classType: Bullet,
+            defaultFrame: 'laser1',
             runChildUpdate: true,
+            
         })
 
         myBullets = this.physics.add.staticGroup({
             defaultFrame: 'laser1',
             active: true,
             classType: Bullet,
-            runChildUpdate: true,
+            runChildUpdate: true
         })
 
         enemyBullets = this.physics.add.staticGroup({
@@ -161,13 +168,12 @@ export default class Game extends Phaser.Scene {
             runChildUpdate: true,
         })
 
-        enemies = this.physics.add.staticGroup({
+        enemies = this.physics.add.group({
+            classType: Enemy,
             active: true,
             setActive: true,
-            runChildUpdate: true,
-            classType: Enemy
+            runChildUpdate: true
         })
-
 
         resources = this.physics.add.staticGroup({
                 active: true,
@@ -183,13 +189,10 @@ export default class Game extends Phaser.Scene {
             classType: Tree,
             active: true,
         })
+
+        // Create player object
+        player = new Player(this, 200, 50, 'redSoldier');
         
-        drugs = this.physics.add.staticGroup({
-            active: true,
-            classType: Drug,
-            runChildUpdate: true
-            
-        })
         
         /* Populate resources group with children*/
         for (let x = 0; x < 75; x++) {
@@ -207,33 +210,44 @@ export default class Game extends Phaser.Scene {
             
         }    
         for (let x = 0; x < 10; x++) {
-            enemy = enemies.get(Phaser.Math.Between(100, 100), Phaser.Math.Between(100, 100),'blueSoldier')
-            enemy.aquireTarget(player)
-            // enemy.setMass(200)
-            // enemy.setBodySize(enemy.width * 0.5, enemy.height * 0.5)
-            // enemy.body.setCircle(enemy.body.width * 0.5, enemy.body.height * 0.5)
+            enemy = enemies.get(Phaser.Math.Between(1300, 1400), Phaser.Math.Between(1300, 1400),'blueSoldier', resources)
+            enemy.target = player
+            enemy.setName("Enemy" + x.toString())
+            
         }
-
-        /* Create the gayst object. He just follows player around*/
-        gayst = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
+        
+        /* Create the companion object. He just follows player around*/
+        companion = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
         .setVisible(true)
         .setName('Casper')
         .setActive(true)
         .setInteractive()
-        gayst.body.setCircle(10, 6, 6)
+        companion.body.setCircle(10, 6, 6)
         
         /* Set main camera to center on and follow the player*/
         this.cameras.main.centerOn(player.x, player.y);
         this.cameras.main.startFollow(player);
 
         /* Add colliders for game objects*/
-        this.physics.add.collider(player, resources, function dicked(player, resource) {
-            player.incData ('health', -1)
-            console.log("player health dropping, " + player.data.get('health').toString() + " left...");
+        this.physics.add.collider(player, resources, function (player, resource) {
 
         });        
 
-        this.physics.world.addCollider(bullets, mountains, function (bullet, mountain) {
+        this.physics.add.collider(enemy, resources, function (player, resource) {
+
+        });
+
+        this.physics.add.collider(enemies, bullets, function(enemy, bullet){
+            enemy.destroy()
+            bullet.destroy()
+        })
+
+        this.physics.add.collider(enemies, drugs, function(enemy, drug){
+            // enemy.destroy()
+            // drug.destroy()
+        })
+
+        this.physics.add.collider(bullets, mountains, function (bullet, mountain) {
                             
             mountain.destroy()
             bullet.destroy()
@@ -241,58 +255,66 @@ export default class Game extends Phaser.Scene {
 
         })
         
-        this.physics.world.addCollider(bullets, trees, function (bullet, tree) {
+        this.physics.add.collider(bullets, trees, function (bullet, tree) {
                  
             tree.destroy()
             bullet.destroy()
             player.grabResource('wood', 25)
 
         })
+        
+        this.physics.add.collider(companion, resources)
+        
+        this.physics.add.collider(enemies, shootingDistance, function(enemy) {
+            enemy.stopAdvance()
+        })
        
-        this.physics.world.addCollider(gayst, resources)
-
         /* Create animations and text objects for game*/
-        this.anims.play('blueRocketAnimationStill', gayst)
+        this.anims.play('blueRocketAnimationStill', companion)
         placeText = this.add.text(0, 0, ' ' + resources.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
-
+        
     }
-
+    
     update(time, delta) {
+        enemies.runChildUpdate = true        
+        player.update()
+        companionArea = new Phaser.Geom.Rectangle(player.x - 60, player.y - 60, 40, 40)
+        shootingDistance = new Phaser.Geom.Rectangle(player.x, player.y, player.width*3, player.height*3)
+        this.scene.setActive(true, companionArea)
+        this.scene.setVisible(true, companionArea)
+        this.scene.setActive(true, shootingDistance)
+        this.scene.setVisible(true, shootingDistance)
         
-        let gaystArea = new Phaser.Geom.Rectangle(player.x - 60, player.y - 60, 40, 40)
-        // let enemyTarget = new Phaser.Geom.Rectangle(player.x - 60, player.y - 60, 40, 40)
-        // for (let i = 0; i<enemies.count; i++) {
-        //     enemies[i].target(enemyTarget)
-        // }
-        
-        // if (!enemyTarget.contains(enemies.getChildren().x) && !enemyTarget.contains(enemies.getChildren().y)) {
-        //     this.physics.moveTo(enemies.getChildren(), player.x, player.y)
-        // }
-        
+
+        this.physics.world.collide(player, enemies)
+
         if (player.data.get('health') <= 0) {
-            console.log("you've been dicked")
+            console.log("You're Dead!")
             this.scene.pause()
         }
-        
 
-        if (gaystArea.contains(gayst.x, gayst.y)) {
-            gayst.setVelocity(0,0)
+        if (companionArea.contains(companion.x, companion.y)) {
+            companion.setVelocity(0,0)
         }
+        
         else {
-            this.physics.moveTo(gayst, player.x - 30, player.y - 30, 180)
+            this.physics.moveTo(companion, player.x - 30, player.y - 30, 180)
         }
         
         if (resources) {
-
             placeText.destroy()
-            placeText = this.add.text(0, 0, 'Health ' + player.getData('health') + ' Gold ' + player.getData('gold') + '\n' + 'Wood ' + player.getData('wood') + '   ' + 'Stone ' + player.getData('stone'))
+            placeText = this.add.text(0, 0, 'Health ' + player.getData('health') + "\n" + 'Magic ' + player.getData('magic')  + ' Gold ' + player.getData('gold') + '\n' + 'Wood ' + player.getData('wood') + '   ' + 'Stone ' + player.getData('stone'))
             .setScrollFactor(0,0)
             .setBackgroundColor('black')
             .setColor('blue')
             .setScale(1.5, 1.5)
-
         }
 
+        
+        enemies.children.each(function(enemy, target) {            
+            enemy.advance(player)
+            return enemy.stopped
+        })
         
         if (this.w.isDown) {
             player.setVelocityY(-200);
@@ -320,24 +342,19 @@ export default class Game extends Phaser.Scene {
                 checkTime += delta;
             }
             else {
-            bullet = bullets.get();
+            bullet = bullets.get()
             if (bullet) {
                 bullet.mouseX = mousePointer.x;
                 bullet.mouseY = mousePointer.y;
                 bullet.body.setMass(100);
                 bullet.fire(player.getCenter(), mousePointer.position);  
                 }
-            drug = drugs.get();
-            if (drug) {
-                drug.mouseX = mousePointer.x;
-                drug.mouseY = mousePointer.y;
-                drug.body.setMass(100);
-                drug.fire(player.getCenter(), mousePointer.position);  
-                }
+            
             
             checkTime = 0;
             }
         }
+        // this.shootingDistance.destroy()
         
     }
 

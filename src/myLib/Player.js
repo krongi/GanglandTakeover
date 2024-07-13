@@ -1,3 +1,4 @@
+import phaser from "../lib/phaser.js";
 import Phaser from "../lib/phaser.js";
 import Game from "../scenes/Game.js";
 
@@ -18,16 +19,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.setInteractive();
         this.setVisible(true)
         this.setCollideWorldBounds(true)
+        this.circle = this.scene.add.circle(this.x, this.y, this.width*1.5, 200, 140).setActive(true).setVisible(true)
         
+        }
+
+    grabResource(resourceGrabbed, amount) {
+        this.incData(resourceGrabbed, amount)  
     }
 
-    grabResource(resource, amount) {
-        this.resource = this.data.get(resource)
-        this.resource += amount
-        this.data.set(resource, this.resource)
-        console.log(this.data.get(resource))        
-    }
-    grabStone(amount) {
-        this.stone += amount        
+    update() {
+        this.circle.setPosition(this.x, this.y, )
+        
+        
     }
 }
