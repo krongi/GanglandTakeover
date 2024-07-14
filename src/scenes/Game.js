@@ -4,7 +4,8 @@ import Tree from "../myLib/Tree.js";
 import Resource from "../myLib/Resource.js";
 import Mountain from "../myLib/Mountain.js"
 import Player from "../myLib/Player.js";
-import Enemy, { EnemyBullet } from "../myLib/Enemy.js";
+import Enemy from "../myLib/Enemy.js";
+import EnemyBullet from "../myLib/EnemyBullet.js"
 
 
 
@@ -197,10 +198,9 @@ export default class Game extends Phaser.Scene {
             classType: Tree,
             active: true,
         })
-        this.physics.add.sprite()
+        
+        
         // Create player object
-        this.player2 = new Player(this, 200, 50, 'redSoldier');
-        this.player2.setActive(true).setVisible(true).setInteractive()
         this.player = new Player(this, Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 400), 'redSoldier');
         this.player.setActive(true).setVisible(true).setInteractive()
         
@@ -248,8 +248,8 @@ export default class Game extends Phaser.Scene {
 
         /* Add colliders for game objects*/
         this.physics.add.collider(this.player, resources, function (player, resource) {
-            console.log(this.player)
-            console.log(player)
+            // console.log(this.player)
+            // console.log(player)
         });        
 
         this.physics.add.collider(enemy, resources, function (player, resource) {
@@ -270,7 +270,7 @@ export default class Game extends Phaser.Scene {
                             
             mountain.destroy()
             bullet.destroy()
-            this.player.grabResource('stone', 25)
+            // this.player.grabResource('stone', 25)
 
         })
         
@@ -278,7 +278,7 @@ export default class Game extends Phaser.Scene {
                  
             tree.destroy()
             bullet.destroy()
-            this.player.grabResource('wood', 25)
+            // this.player.grabResource('wood', 25)
 
         })
         
@@ -291,15 +291,6 @@ export default class Game extends Phaser.Scene {
         placeText = this.add.text(0, 0, ' ' + resources.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
         companionArea = new Phaser.Geom.Rectangle(this.player.x - 60, this.player.y - 60, 40, 40)
          //.eventNames())
-        function loggo(item) {
-            console.log('Loggo item: ' + item)
-        }
-        function enemiesLocationCheck(itemToCheck) {
-            let checkedLocation = itemToCheck.location
-            // console.log(checkedLocation)
-            return checkedLocation
-
-        }
         
     }
     
@@ -307,10 +298,10 @@ export default class Game extends Phaser.Scene {
         
         let inRange = false
         this.enemies.children.each(function enemiesLocationCheck(enemy) {
-            let playerCurrentLocation = this.player.getLocation()
-            let enemyCurrentLocation = enemy.getLocation()
-            let xdiff = Math.abs(enemyCurrentLocation[0]) - Math.abs(playerCurrentLocation[0])
-            let ydiff = Math.abs(enemyCurrentLocation[1]) - Math.abs(playerCurrentLocation[1])
+            let playerCurrentLocation = this.player.position
+            let enemyCurrentLocation = enemy.position
+            let xdiff = Math.abs(enemy.x) - Math.abs(this.player.x)
+            let ydiff = Math.abs(enemy.y) - Math.abs(this.player.y)
             if (Math.abs(xdiff) < 300 && Math.abs(ydiff) < 300) {
                 // console.log(enemy.name + ' is in range...')
                 inRange = true

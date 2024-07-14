@@ -20,18 +20,18 @@ export default class Bullet extends Phaser.Physics.Arcade.Image {
     }
     
 
-    fire(shooterPosition, targetPosition, angleIncrement = 1) {
+    fire(shooterPosition, targetPosition) {
         this.setActive(true)
         this.setVisible(true)      
         this.enableBody(true, shooterPosition.x, shooterPosition.y)
         this.setPosition(shooterPosition.x, shooterPosition.y)
-        let angle = Phaser.Math.Angle.Between(targetPosition.x, targetPosition.y, shooterPosition.x, shooterPosition.y)
-        this.setRotation(angle)
+        let angle = Phaser.Math.Angle.Between(shooterPosition.x, shooterPosition.y, targetPosition.x, targetPosition.y)
+        this.setRotation(angle)-180
         this.body.isCircle = true
         this.body.setSize(this.width * 0.25, this.height * 0.25)
-        // this.flipX = true
-        this.incX = Math.sin(angle) * angleIncrement
-        this.incY = Math.cos(angle) * angleIncrement
+        this.flipX = true
+        this.incX = Math.sin(angle)
+        this.incY = Math.cos(angle)
         // this.incX = Math.sin(angle) * 0.5
         // this.incY = Math.cos(angle) * 0.5
         this.lifeSpan = 1000
