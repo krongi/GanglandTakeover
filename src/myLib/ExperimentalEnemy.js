@@ -3,13 +3,13 @@ import Game from "../scenes/Game.js";
 import Player from "./Player.js";
 import Bullet from "./Bullet.js";
 
-export default class Enemy extends Phaser.Physics.Arcade.Sprite {
+export default class ExperimentalEnemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture, resources, target ) {
         super(scene, x, y, texture = 'blueSoldier')
         this.target = target, 
         this.x = x
         this.y = y
-        this.gameType = "Enemy"
+        this.gameType = "ExperimentalEnemy"
         this.scene = scene
         this.setData({health: 40, magic: 100, gold: 200, wood: 0, stone: 0})
         this.resources = resources,
@@ -32,54 +32,32 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.parentScene = scene
         this.xDiff
         this.yDiff
-        this.setBounce(.99, .99)
-        this.setInteractive(true)
-        this.once('canFire', function(){console.log('from enemy to enemy')})
-        // this.addListener('fromScene', function(){console.log('from scene to enemy')})
-        this.location
-        
-        // scene.events.once('canFire', function(gool, pullStat) {gool = console.log('dick'); return pullStat})
-        // scene.events.once('holdFire', this.pullStat())
-        // this.enemyBullets = new Phaser.Physics.Arcade.Group(scene.physics.world, scene)
-        // this.enemyBullet = new Bullet(scene, this.x, this.y, 'laser1')
-        // scene.add.existing(this.enemyBullet)
-        // scene.add.existing(this.enemyBullets)
-        // scene.physics.add.existing(this.enemyBullet)
-        // scene.physics.add.existing(this.enemyBullets)
-        // this.bulletPhysicsGroup = bulletPhysicsGroup
+        this.experimentalEnemyBullets = new Phaser.Physics.Arcade.Group(scene.physics.world, scene)
+        this.experimentalEnemyBullet = new Bullet(scene, this.x, this.y, 'laser1')
+        scene.add.existing(this.experimentalEnemyBullet)
+        scene.add.existing(this.experimentalEnemyBullets)
+        scene.physics.add.existing(this.experimentalEnemyBullet)
+        scene.physics.add.existing(this.experimentalEnemyBullets)
+        this.bulletPhysicsGroup = bulletPhysicsGroup
     
-        // console.log(this)
+        console.log(this)
     }
-    // pullStat() {
-    //     console.log(this.stopped); return this.stopped
-    // getName (callback) {
-    //     let name = this.name
-        
-    // }
-    // }
+
     augmentResource(resource, amount) {
         this.data.inc(resource, amount)
     }
 
-    getLocation() {
-        // console.log(this.x, this.y)
-        return [this.x, this.y]
-    }
    
-    advance() {
-        let xDiff = Math.abs(this.x) - Math.abs(this.target.x)
-        let yDiff = Math.abs(this.y) - Math.abs(this.target.y)
+    advance(target) {
+        let xDiff = Math.abs(this.x) - Math.abs(target.x)
+        let yDiff = Math.abs(this.y) - Math.abs(target.y)
         this.xDiff = xDiff
         this.yDiff = yDiff
         if (Math.abs(xDiff) < 300 && Math.abs(yDiff) < 300) {
             this.setVelocity(0,0)
-            this.emit('canFire')
-            this.stopped = true
         }
         else {
-            this.scene.physics.moveToObject(this, this.target, 100)
-            this.stopped = false
-            this.scene.events.emit('holdFire')
+            this.scene.physics.moveToObject(this, target, 100)
         }        
     }
 
@@ -96,17 +74,16 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(time, delta) {
-        this.advance(this.target)
+        
         this.lifeSpan += delta
         this.x -= this.incX * (this.speed * delta)
         this.body.x -= this.incX * (this.speed * delta)
         this.y -= this.incY * (this.speed * delta)
         this.body.y -= this.incY * (this.speed * delta)
-        this.location = [this.body.x, this.body.y]
     }
 }
 
-export class EnemyBullet extends Bullet {
+export class ExperimentalEnemyBullet extends Bullet {
     constructor(scene, x, y, imageKey) {
         super(scene, x, y, imageKey = 'laser1')
     }
