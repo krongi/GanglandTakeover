@@ -36,7 +36,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.setInteractive(true)
         this.once('canFire', function(){console.log('from enemy to enemy')})
         // this.addListener('fromScene', function(){console.log('from scene to enemy')})
-        this.location
+        
         
         // scene.events.once('canFire', function(gool, pullStat) {gool = console.log('dick'); return pullStat})
         // scene.events.once('holdFire', this.pullStat())
