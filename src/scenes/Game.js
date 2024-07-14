@@ -234,6 +234,7 @@ export default class Game extends Phaser.Scene {
             
         }
         
+        
         /* Create the companion object. He just follows player around*/
         companion = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
         .setVisible(true)
@@ -261,6 +262,12 @@ export default class Game extends Phaser.Scene {
             bullet.destroy()
         })
 
+        this.physics.add.collider(this.player, enemyBullets, function (player = this.player, enemyBullet) {
+            
+            healthDown(player)
+            player.scene.events.emit('playerHit', player.getData('health'))
+            enemyBullet.destroy()
+    })
         this.physics.add.collider(this.enemies, resources, function(enemy, resource){
             // enemy.destroy()
             
@@ -273,7 +280,16 @@ export default class Game extends Phaser.Scene {
             // this.player.grabResource('stone', 25)
 
         })
-        
+        this.physics.add.collider(trees, enemyBullets, function(tree, enemyBullet){
+            tree.destroy()
+            enemyBullet.destroy()
+        })
+
+        this.physics.add.collider(mountains, enemyBullets, function(mountain, enemyBullet){
+            mountain.destroy()
+            enemyBullet.destroy()
+        })
+
         this.physics.add.collider(bullets, trees, function (bullet, tree) {
                  
             tree.destroy()
@@ -307,7 +323,7 @@ export default class Game extends Phaser.Scene {
                 inRange = true
             }
             if (inRange == true) {
-                    if (checkTime < 500) {
+                    if (checkTime < 1500) {
                         checkTime += delta;
                     }
                     else {
@@ -352,10 +368,10 @@ export default class Game extends Phaser.Scene {
         this.physics.world.collide(this.player, this.enemies)
 
 
-        if (this.player.data.get('health') <= 0) {
-            console.log("You're Dead!")
-            this.scene.pause()
-        }
+        // if (this.player.data.get('health') <= 0) {
+        //     console.log("You're Dead!")
+        //     this.scene.pause()
+        // }
         
         if (companionArea.contains(companion.x, companion.y)) {
             companion.setVelocity(0,0)
@@ -450,5 +466,23 @@ export default class Game extends Phaser.Scene {
             }
         }
                
+    }
+}
+
+function healthDown(player) {
+    let healthLeft = player.getData('health')
+    player.incData('health', -Phaser.Math.Between(0, 5))
+    player.scene.events.emit('gotHit', player.getData('health'))
+    if (healthLeft <= 0) {
+        player.destroy()
+        this.scene.placeText.destroy()
+        let deadText = player.scene.add.text(player.getCenter().x, player.getCenter().y, "\n  YOU'RE DEAD  ")
+            .setScrollFactor(0,0)
+            .setBackgroundColor('black')
+            .setColor('grey')
+            .setScale(4)
+            .setDepth(10)
+            console.log("You're Dead!")
+            this.scene.pause()
     }
 }
