@@ -475,14 +475,15 @@ function healthDown(player) {
     player.scene.events.emit('gotHit', player.getData('health'))
     if (healthLeft <= 0) {
         player.destroy()
-        this.scene.placeText.destroy()
-        let deadText = player.scene.add.text(player.getCenter().x, player.getCenter().y, "\n  YOU'RE DEAD  ")
-            .setScrollFactor(0,0)
-            .setBackgroundColor('black')
-            .setColor('grey')
-            .setScale(4)
-            .setDepth(10)
-            console.log("You're Dead!")
-            this.scene.pause()
+
+        // this.scene.placeText.destroy()
+        // let deadText = player.scene.add.text(player.getCenter().x, player.getCenter().y, "\n  YOU'RE DEAD  ")
+        //     .setScrollFactor(0,0)
+        //     .setBackgroundColor('black')
+        //     .setColor('grey')
+        //     .setScale(4)
+        //     .setDepth(10)
+        //     console.log("You're Dead!")
+            player.scene.pause()
     }
 }
