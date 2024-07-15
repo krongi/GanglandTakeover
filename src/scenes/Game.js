@@ -53,9 +53,7 @@ export default class Game extends Phaser.Scene {
 
     preload() {
 
-        /*This is where we load our assets at. We don't make them variables but we do assign them keys to reference
-        later        */
-
+        /**Load images and other assets to be used by this scene */
         this.load.spritesheet('blueRocketGuy', '../assets/blueRocketGuy.png', {frameWidth:32, frameHeight: 32})
         this.load.spritesheet('redSoldier', '../assets/redSoldiers.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('blueSoldier', '../assets/blueSoldiers.png', {frameWidth: 64, frameHeight: 64});
@@ -66,11 +64,6 @@ export default class Game extends Phaser.Scene {
         this.load.image('laser1','../assets/laser1.png');
         this.load.image('tree', '../assets/tree.png');
         this.load.image('mountain', '../assets/mountain.png');
-        // this.load.image('cokeBlock', '../assets/cokeBlock.png')
-        // this.load.image('weedBag', '../assets/weedBag.png')
-        // this.load.image('acidSheet', '../assets/acidSheet.png')
-        // this.load.image('xtcPill', '../assets/xtcPill.png')
-
 
     }
         
@@ -136,9 +129,7 @@ export default class Game extends Phaser.Scene {
 
         /* Add the inputs for the game here. Currently will only be using certain keys and 
         some mouse */
-
         mousePointer = this.input.activePointer;
-        
         this.w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -154,8 +145,7 @@ export default class Game extends Phaser.Scene {
         bullets = this.physics.add.staticGroup({
             classType: Bullet,
             defaultFrame: 'laser1',
-            runChildUpdate: true,
-            
+            runChildUpdate: true,    
         })
 
         myBullets = this.physics.add.staticGroup({
@@ -183,12 +173,12 @@ export default class Game extends Phaser.Scene {
                 active: false,
                 setVisible: false,
                 classType: Resource,
-                
+                setDepth: -1                
         })
+
         mountains = this.physics.add.staticGroup({
             classType: Mountain,
             active: true,
-            
         })  
 
         trees = this.physics.add.staticGroup({
@@ -196,13 +186,11 @@ export default class Game extends Phaser.Scene {
             active: true,
         })
         
-        
-        // Create player object
+        /**Create and activate player */
         this.player = new Player(this, Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 400), 'redSoldier');
         this.player.setActive(true).setVisible(true).setInteractive()
-    
         
-        /* Populate resources group with children*/
+        /**Populate map with collidable objects that will hold resources later */
         for (let x = 0; x < 75; x++) {
             mountain = mountains.get(Phaser.Math.Between(40, 1400), Phaser.Math.Between(40, 1400))
             mountain.setMass(200)
@@ -216,7 +204,8 @@ export default class Game extends Phaser.Scene {
             resources.add(mountain)
             resources.add(tree)           
             
-        }    
+        }   
+        /**Create enemies */ 
         for (let x = 0; x < 10; x++) {
             // enemy = this.enemies.get(Phaser.Math.Between(1300, 1400), Phaser.Math.Between(1300, 1400),'blueSoldier', resources, this.player)
             enemy = new Enemy(this, Phaser.Math.Between(1300, 1400), Phaser.Math.Between(1300, 1400),'blueSoldier', resources, this.player)
@@ -233,10 +222,10 @@ export default class Game extends Phaser.Scene {
         
         /* Create the companion object. He just follows player around*/
         companion = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
-        .setVisible(true)
-        .setName('Casper')
-        .setActive(true)
-        .setInteractive()
+            .setVisible(true)
+            .setName('Casper')
+            .setActive(true)
+            .setInteractive()
         companion.body.setCircle(10, 6, 6)
         
         /* Set main camera to center on and follow the player*/
@@ -245,8 +234,7 @@ export default class Game extends Phaser.Scene {
 
         /* Add colliders for game objects*/
         this.physics.add.collider(this.player, resources, function (player, resource) {
-            // console.log(this.player)
-            // console.log(player)
+            
         });        
 
         this.physics.add.collider(enemy, resources, function (player, resource) {
@@ -259,13 +247,10 @@ export default class Game extends Phaser.Scene {
         })
 
         this.physics.add.collider(this.player, enemyBullets, function (player = this.player, enemyBullet) {
-            
-            healthDown(player)
-            player.scene.events.emit('playerHit', player.getData('health'))
+            player.healthDown(10)
             enemyBullet.destroy()
-    })
+        })
         this.physics.add.collider(this.enemies, resources, function(enemy, resource){
-            // enemy.destroy()
             
         })
 
@@ -291,22 +276,22 @@ export default class Game extends Phaser.Scene {
             tree.destroy()
             bullet.destroy()
             // this.player.grabResource('wood', 25)
-
         })
-        
+        /**Add some generic colliders */
         this.physics.add.collider(companion, resources)
-
-        // this.physics.add.collider(player.rect, enemies)
+        this.physics.add.collider(this.enemies)
+        this.physics.add.collider(trees, mountains)
+        
        
         /* Create animations and text objects for game*/
         this.anims.play('blueRocketAnimationStill', companion)
-        placeText = this.add.text(0, 0, ' ' + resources.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
-        companionArea = new Phaser.Geom.Rectangle(this.player.x - 60, this.player.y - 60, 40, 40)
-         //.eventNames())
 
+        /**Create rectangle that will follow player so companion will follow */
+        this.companionArea = new Phaser.Geom.Rectangle(this.player.x - 60, this.player.y - 60, 40, 40)
          
-            this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
-             + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
+        /**Create the "HUD" and the on death message, the on death message is
+         * set below everything else, it will be displayed on death */
+        this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold') + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
             .setScrollFactor(0,0)
             .setBackgroundColor('black')
             .setColor('grey')
@@ -314,7 +299,7 @@ export default class Game extends Phaser.Scene {
             .setDepth(10)
 
             
-            deadMessage = this.add.text(this.player.x, this.player.y, "  YOU'RE DEAD  ")
+        this.deadMessage = this.add.text(this.player.x, this.player.y, "  YOU'RE DEAD  ")
             .setScrollFactor(0,0)
             .setBackgroundColor('black')
             .setColor('red')
@@ -323,8 +308,11 @@ export default class Game extends Phaser.Scene {
     }
     
     update(time, delta) {
-        this.add.text()
-        if (resources) {
+        /**Ensure companion area fallows player around */
+        this.companionArea.setPosition(this.player.getCenter().x, this.player.getCenter().y)
+        
+        /**Update the "HUD" on the screen with relevant info*/
+        if (this.player) {
             this.placeText.destroy()
             this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
              + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
@@ -335,7 +323,7 @@ export default class Game extends Phaser.Scene {
             .setDepth(10)
         }
 
-        // this.editHUDBox(this.scene, this.player, this.physics)
+        /** Check if enemies are in range, stop and fire if so */
         let inRange = false
         this.enemies.children.each(function enemiesLocationCheck(enemy) {
             let playerCurrentLocation = this.player.position
@@ -371,107 +359,47 @@ export default class Game extends Phaser.Scene {
             }
             
         }, this)
-        // console.log(loc.entries.values(location))
-        // enemies.children.iterate(function (enemy){let name = enemy.name; return name})
-
-        // let enemyLocation = this.enemies.children.each(function (enemy) {
-        //     let loc = enemy.location
-        //     return loc
-
-        // })
-        // console.log(loc)
-        this.enemies.runChildUpdate = true        
-        this.player.update()
         
-        // shootingDistance = new Phaser.Geom.Rectangle(player.x, player.y, player.width*3, player.height*3)
-        this.scene.setActive(true, companionArea)
-        this.scene.setVisible(true, companionArea)
-        this.scene.setActive(true, shootingDistance)
-        this.scene.setVisible(true, shootingDistance)
-        
-        this.physics.world.collide(this.player, this.enemies)
-        
-        if (resources) {
-            this.placeText.destroy()
-            this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
-             + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
-            .setScrollFactor(0,0)
-            .setBackgroundColor('black')
-            .setColor('grey')
-            .setScale(1.5, 1.5)
-            .setDepth(10)
-        }
-
-        // if (this.player.data.get('health') <= 0) {
-        //     console.log("You're Dead!")
-        //     this.scene.pause()
-        // }
-            
-        if (companionArea.contains(companion.x, companion.y)) {
+        /** Check if companion is in the area (follows player), if not move to the area */
+        if (this.companionArea.contains(companion.x, companion.y)) {
             companion.setVelocity(0,0)
         }
         else {
             this.physics.moveTo(companion, this.player.x - 30, this.player.y - 30, 180)
         }
         
-        // this.physics.collide(player.rect, enemies, function (enemy) {
-            
-        // })
-
-        /* This section is where the resources section (black part of upper left) gets updated 
+        /** Ensure player is actually alive and part of scene before taking input
+         * to move him, kept getting crashes due to the player being destoryed and
+         * scene trying to set velocity to  0
          */
-        
-        // let innerTarget = (player.getPosition.x, player.getPosition.y)
-        function aFunction (shooter, target) {
-            bullet = bullets.get()
-                if (bullet) {
-                bullet.mouseX = target.x;
-                bullet.mouseY = target.y;
-                bullet.body.setMass(100);
-                bullet.fire(shooter.getCenter(), target.position);
-                }
-        }
-        // this.enemies.children.each(function (enemy, target) {
-        //     // enemy.advance(player)
-
-        // })
-        
-            // enemy.advance(player)
-        //     console.log(enemy.stopped)
-        //     if (enemy.stopped) {
-        //         bullet = bullets.get()
-        //         if (bullet) {
-        //         bullet.mouseX = innerTarget.x;
-        //         bullet.mouseY = innerTarget.y;
-        //         bullet.body.setMass(100);
-        //         bullet.fire(enemy.getCenter(), innerTarget.position);
-        //         }
-        //     }
-        //    // return enemy.stopped
-            
-        // },this.scene
-         /* this is the section for input for player movement*/
-        if (this.w.isDown) {
-            this.player.setVelocityY(-200);
-            this.player.setFrame(1);
-        }        
-        else if (this.s.isDown) {
-            this.player.setVelocityY(200);
-            this.player.setFrame(3);
-        }
-        else if (this.d.isDown) {
-            this.player.setVelocityX(200);
-            this.player.setFrame(2);
-        }
-        else if (this.a.isDown) {
-            this.player.setVelocityX(-200);
-            this.player.setFrame(0);
+        if (!this.player.isAlive) {
+            this.placeText.setDepth(-1)
+            this.deadMessage.setDepth(10)
+            this.player.destroy()
+            this.scene.pause()
         }
         else {
-            this.player.setVelocity(0, 0);
+            if (this.w.isDown) {
+                this.player.setVelocityY(-200);
+                this.player.setFrame(1);
+            }        
+            else if (this.s.isDown) {
+                this.player.setVelocityY(200);
+                this.player.setFrame(3);
+            }
+            else if (this.d.isDown) {
+                this.player.setVelocityX(200);
+                this.player.setFrame(2);
+            }
+            else if (this.a.isDown) {
+                this.player.setVelocityX(-200);
+                this.player.setFrame(0);
+            }
+            else {
+                this.player.setVelocity(0, 0);
+            }
         }
-
-        if (mousePointer.isDown) {
+        if (mousePointer.isDown && this.player.isAlive) {
             
             if (checkTime < 500) {
                 checkTime += delta;
@@ -487,47 +415,7 @@ export default class Game extends Phaser.Scene {
             checkTime = 0;
             }
         }
-        // this.scene.add()
                
     }
+
 }
-
-function healthDown(player) {
-    let healthLeft = player.getData('health')
-    player.incData('health', -Phaser.Math.Between(0, 5))
-    player.scene.events.emit('gotHit', player.getData('health'))
-    if (healthLeft <= 0) {
-        player.destroy()
-
-        // this.scene.placeText.destroy()
-        // let deadText = player.scene.add.text(player.getCenter().x, player.getCenter().y, "\n  YOU'RE DEAD  ")
-        //     .setScrollFactor(0,0)
-        //     .setBackgroundColor('black')
-        //     .setColor('grey')
-        //     .setScale(4)
-        //     .setDepth(10)
-        //     console.log("You're Dead!")
-            player.scene.pause()
-    
-    }
-}
-// function editHUDBox(scene, player, placeText) {
-//     // if (resources) {
-//         if(placeText) {
-//             placeText.destroy()
-//         }
-//         else {
-//             placeText = scene.add.text(0, 0, 'Health ' + player.getData('health') + "\n" + 'Magic ' + player.getData('magic')  + ' Gold ' + player.getData('gold') + '\n' + 'Wood ' + player.getData('wood') + ' ' + 'Stone ' + player.getData('stone'))}
-//             // scene.add()
-//         // }
-
-        // this.load.spritesheet('blueRocketGuy', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/blueRocketGuy.png?v=1721024465440', {frameWidth:32, frameHeight: 32})
-        // this.load.spritesheet('redSoldier', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/redSoldiers.png?v=1721024485843', {frameWidth: 64, frameHeight: 64});
-        // this.load.spritesheet('blueSoldier', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/blueSoldiers.png?v=1721024473300', {frameWidth: 64, frameHeight: 64});
-        // this.load.atlas('laser', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/lasers.png?v=1721024485471', '../assets/lasers.json');
-        // this.load.atlas('worldTilesAtlas', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/worldTiles.png?v=1721024483702', '../assets/worldTiles.json');
-        // this.load.atlas('bullets', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/lasers.png?v=1721024485471', '../assets/lasers.json');
-        // this.load.spritesheet('worldTiles', '../assets/worldTiles.png', {frameWidth: 64, frameHeight: 64})
-        // this.load.image('laser1','https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/laser1.png?v=1721024484360');
-        // this.load.image('tree', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/tree.png?v=1721024486021');
-        // this.load.image('mountain', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/mountain.png?v=1721024485645'))};

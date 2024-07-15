@@ -18,19 +18,25 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.setInteractive();
         this.setVisible(true)
         this.setCollideWorldBounds(true)
-        // this.rect = this.scene.add.rectangle(this.x, this.y, this.width * 3, this.height * 3, 150, 100)
-        // this.scene.physics.add.existing(this.rect)
-        // this.circle = this.scene.add.circle(this.x, this.y, this.width*1.5, 200, 140).setActive(true).setVisible(true)        
-        // this.rect.addListener('inRange', function (this) {
+        this.isAlive = true
         }
 
     getLocation() {
-        // console.log(this.x, this.y)
         return [this.x, this.y]
     }
 
     grabResource(resourceGrabbed, amount) {
         this.incData(resourceGrabbed, amount)  
+    }
+
+    healthDown(dropMax, dropMin = 0 ) {
+        this.incData('health', -Phaser.Math.Between(dropMin, dropMax))
+        let currentHealth = this.getData('health')
+        this.scene.events.emit('gotHit', this.getData('health'))
+        if (currentHealth <= 0) {
+            this.isAlive = false
+           this.setVelocity(0,0)
+        }
     }
 
     update() {
