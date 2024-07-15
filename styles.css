@@ -1,0 +1,45 @@
+html {
+    background: silver;
+  
+  }
+  header {
+    background: yellow;
+  /*   display: fill; */
+    padding: 15px;
+    margin: 12px;
+    border-radius: 8px;
+    
+  }
+  
+  h1 {
+    color: red;
+    text-align: center;
+    background: cyan;
+    border-radius: 5px;
+    
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: system-ui;
+  }
+  
+  #parent {
+    flex: 1 1 0;
+    width: 100%;
+    height: 100%;
+    align-content: center;
+  /*   outline: thin dotted red;  */
+  }
+  
+  #game {
+    outline: 4px solid cyan;
+    border-radius: 10px;
+    position: center;
+  }
