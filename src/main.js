@@ -2,15 +2,15 @@ import Phaser from "./lib/phaser.js";
 import Game from "./scenes/Game.js";
 
 const gameConfig = ({
-    name: 'Gangland Takeover',
+    name: 'Regular Game',
     type: Phaser.AUTO,
-    title: "Gangland Takeover",
+    title: "Regular Game",
     width: 1200,
     height: 800,
     parent: "game",
     // zoom: 0.5,
     scene: [Game],
-    // banner: 'whoa, dicked',
+    banner: "Just a regular ol' game",
     physics: {
         default: 'arcade',
         arcade: {
@@ -19,7 +19,7 @@ const gameConfig = ({
             // gravity: {
             //     y: 200
             // },
-            debug: true
+            // debug: true
         }
         
     }})
