@@ -35,28 +35,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.setBounce(.99, .99)
         this.setInteractive(true)
         this.once('canFire', function(){console.log('from enemy to enemy')})
-        // this.addListener('fromScene', function(){console.log('from scene to enemy')})
-        
-        
-        // scene.events.once('canFire', function(gool, pullStat) {gool = console.log('dick'); return pullStat})
-        // scene.events.once('holdFire', this.pullStat())
-        // this.enemyBullets = new Phaser.Physics.Arcade.Group(scene.physics.world, scene)
-        // this.enemyBullet = new Bullet(scene, this.x, this.y, 'laser1')
-        // scene.add.existing(this.enemyBullet)
-        // scene.add.existing(this.enemyBullets)
-        // scene.physics.add.existing(this.enemyBullet)
-        // scene.physics.add.existing(this.enemyBullets)
-        // this.bulletPhysicsGroup = bulletPhysicsGroup
-    
-        // console.log(this)
     }
-    // pullStat() {
-    //     console.log(this.stopped); return this.stopped
-    // getName (callback) {
-    //     let name = this.name
-        
-    // }
-    // }
+    
     augmentResource(resource, amount) {
         this.data.inc(resource, amount)
     }

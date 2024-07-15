@@ -7,11 +7,6 @@ import Player from "../myLib/Player.js";
 import Enemy from "../myLib/Enemy.js";
 import EnemyBullet from "../myLib/EnemyBullet.js"
 
-
-
-
-
-
 // hardware
 let mousePointer;
 
@@ -47,6 +42,7 @@ let enemyStopped
 let target
 let playerThis
 let angleIncrementCounter = 0
+let deadMessage
 
 
 export default class Game extends Phaser.Scene {
@@ -184,7 +180,8 @@ export default class Game extends Phaser.Scene {
         })
 
         resources = this.add.group({
-                active: true,
+                active: false,
+                setVisible: false,
                 classType: Resource,
                 
         })
@@ -203,8 +200,7 @@ export default class Game extends Phaser.Scene {
         // Create player object
         this.player = new Player(this, Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 400), 'redSoldier');
         this.player.setActive(true).setVisible(true).setInteractive()
-        
-        
+    
         
         /* Populate resources group with children*/
         for (let x = 0; x < 75; x++) {
@@ -307,11 +303,39 @@ export default class Game extends Phaser.Scene {
         placeText = this.add.text(0, 0, ' ' + resources.getLength()).setPosition(0, 0).setScrollFactor(1, 1)
         companionArea = new Phaser.Geom.Rectangle(this.player.x - 60, this.player.y - 60, 40, 40)
          //.eventNames())
-        
+
+         
+            this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
+             + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
+            .setScrollFactor(0,0)
+            .setBackgroundColor('black')
+            .setColor('grey')
+            .setScale(1.5, 1.5)
+            .setDepth(10)
+
+            
+            deadMessage = this.add.text(this.player.x, this.player.y, "  YOU'RE DEAD  ")
+            .setScrollFactor(0,0)
+            .setBackgroundColor('black')
+            .setColor('red')
+            .setScale(5)
+            .setDepth(-1)
     }
     
     update(time, delta) {
-        this.physics.world.collide(this.enemies)
+        this.add.text()
+        if (resources) {
+            this.placeText.destroy()
+            this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
+             + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
+            .setScrollFactor(0,0)
+            .setBackgroundColor('black')
+            .setColor('grey')
+            .setScale(1.5, 1.5)
+            .setDepth(10)
+        }
+
+        // this.editHUDBox(this.scene, this.player, this.physics)
         let inRange = false
         this.enemies.children.each(function enemiesLocationCheck(enemy) {
             let playerCurrentLocation = this.player.position
@@ -366,18 +390,26 @@ export default class Game extends Phaser.Scene {
         this.scene.setVisible(true, shootingDistance)
         
         this.physics.world.collide(this.player, this.enemies)
-
+        
+        if (resources) {
+            this.placeText.destroy()
+            this.placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
+             + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
+            .setScrollFactor(0,0)
+            .setBackgroundColor('black')
+            .setColor('grey')
+            .setScale(1.5, 1.5)
+            .setDepth(10)
+        }
 
         // if (this.player.data.get('health') <= 0) {
         //     console.log("You're Dead!")
         //     this.scene.pause()
         // }
-        
+            
         if (companionArea.contains(companion.x, companion.y)) {
             companion.setVelocity(0,0)
-            
         }
-        
         else {
             this.physics.moveTo(companion, this.player.x - 30, this.player.y - 30, 180)
         }
@@ -388,16 +420,7 @@ export default class Game extends Phaser.Scene {
 
         /* This section is where the resources section (black part of upper left) gets updated 
          */
-        if (resources) {
-            placeText.destroy()
-            placeText = this.add.text(0, 0, 'Health ' + this.player.getData('health') + "\n" + 'Magic ' + this.player.getData('magic')  + ' Gold ' + this.player.getData('gold')
-             + '\n' + 'Wood ' + this.player.getData('wood') + '   ' + 'Stone ' + this.player.getData('stone'))
-            .setScrollFactor(0,0)
-            .setBackgroundColor('black')
-            .setColor('grey')
-            .setScale(1.5, 1.5)
-            .setDepth(10)
-        }
+        
         // let innerTarget = (player.getPosition.x, player.getPosition.y)
         function aFunction (shooter, target) {
             bullet = bullets.get()
@@ -408,10 +431,10 @@ export default class Game extends Phaser.Scene {
                 bullet.fire(shooter.getCenter(), target.position);
                 }
         }
-        this.enemies.children.each(function (enemy, target) {
-            // enemy.advance(player)
+        // this.enemies.children.each(function (enemy, target) {
+        //     // enemy.advance(player)
 
-        })
+        // })
         
             // enemy.advance(player)
         //     console.log(enemy.stopped)
@@ -427,8 +450,7 @@ export default class Game extends Phaser.Scene {
         //    // return enemy.stopped
             
         // },this.scene
-
-        /* this is the section for input for player movement*/
+         /* this is the section for input for player movement*/
         if (this.w.isDown) {
             this.player.setVelocityY(-200);
             this.player.setFrame(1);
@@ -465,6 +487,7 @@ export default class Game extends Phaser.Scene {
             checkTime = 0;
             }
         }
+        // this.scene.add()
                
     }
 }
@@ -485,5 +508,26 @@ function healthDown(player) {
         //     .setDepth(10)
         //     console.log("You're Dead!")
             player.scene.pause()
+    
     }
 }
+// function editHUDBox(scene, player, placeText) {
+//     // if (resources) {
+//         if(placeText) {
+//             placeText.destroy()
+//         }
+//         else {
+//             placeText = scene.add.text(0, 0, 'Health ' + player.getData('health') + "\n" + 'Magic ' + player.getData('magic')  + ' Gold ' + player.getData('gold') + '\n' + 'Wood ' + player.getData('wood') + ' ' + 'Stone ' + player.getData('stone'))}
+//             // scene.add()
+//         // }
+
+        // this.load.spritesheet('blueRocketGuy', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/blueRocketGuy.png?v=1721024465440', {frameWidth:32, frameHeight: 32})
+        // this.load.spritesheet('redSoldier', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/redSoldiers.png?v=1721024485843', {frameWidth: 64, frameHeight: 64});
+        // this.load.spritesheet('blueSoldier', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/blueSoldiers.png?v=1721024473300', {frameWidth: 64, frameHeight: 64});
+        // this.load.atlas('laser', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/lasers.png?v=1721024485471', '../assets/lasers.json');
+        // this.load.atlas('worldTilesAtlas', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/worldTiles.png?v=1721024483702', '../assets/worldTiles.json');
+        // this.load.atlas('bullets', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/lasers.png?v=1721024485471', '../assets/lasers.json');
+        // this.load.spritesheet('worldTiles', '../assets/worldTiles.png', {frameWidth: 64, frameHeight: 64})
+        // this.load.image('laser1','https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/laser1.png?v=1721024484360');
+        // this.load.image('tree', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/tree.png?v=1721024486021');
+        // this.load.image('mountain', 'https://cdn.glitch.global/acd0ce8d-9bac-477e-a3d8-422882d465bd/mountain.png?v=1721024485645'))};
