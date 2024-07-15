@@ -311,7 +311,7 @@ export default class Game extends Phaser.Scene {
     }
     
     update(time, delta) {
-        
+        this.physics.world.collide(this.enemies)
         let inRange = false
         this.enemies.children.each(function enemiesLocationCheck(enemy) {
             let playerCurrentLocation = this.player.position
