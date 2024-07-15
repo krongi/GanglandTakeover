@@ -216,9 +216,7 @@ export default class Game extends Phaser.Scene {
             enemy.setActive(true).setVisible(true).setInteractive()
             this.enemies.add(enemy)
             
-            
         }
-        
         
         /* Create the companion object. He just follows player around*/
         companion = this.physics.add.sprite(200, 300, 'blueRocketGuy', 4)
@@ -271,8 +269,7 @@ export default class Game extends Phaser.Scene {
             enemyBullet.destroy()
         })
 
-        this.physics.add.collider(bullets, trees, function (bullet, tree) {
-                 
+        this.physics.add.collider(bullets, trees, function (bullet, tree) {     
             tree.destroy()
             bullet.destroy()
             // this.player.grabResource('wood', 25)
